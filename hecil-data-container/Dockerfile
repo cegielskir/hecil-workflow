@@ -17,8 +17,8 @@ RUN ./fastq_generate.pl $(( 10 * ${NUMBER_OF_CONTIGS})) $(( 10 * ${LENGTH_OF_CON
 
 FROM mhart/alpine-node:8
 
-RUN mkdir /work_dir
-WORKDIR /work_dir
+RUN mkdir /data
+WORKDIR /data
 
 COPY --from=data /work_dir/* ./
 

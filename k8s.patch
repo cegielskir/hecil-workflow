@@ -76,3 +76,26 @@ index c1d5ef1..6a72f93 100644
      additionalVariables:
        - name: HF_VAR_DEBUG
          value: "0"
+diff --git a/values/minikube/hyperflow-engine.yml b/values/minikube/hyperflow-engine.yml
+index a6f5063..90faf65 100644
+--- a/values/minikube/hyperflow-engine.yml
++++ b/values/minikube/hyperflow-engine.yml
+@@ -2,7 +2,8 @@ containers:
+   hyperflow:
+     image: hyperflowwms/hyperflow:v1.4.3
+   worker:
+-    image: hyperflowwms/montage2-worker:je-v1.1.1
++    image: hecil-worker:0.1
++    imagePullPolicy: Never
+     additionalVariables:
+       - name: HF_VAR_DEBUG
+         value: "1"
+@@ -30,7 +31,7 @@ containers:
+           while true; do sleep 5 ; done ;
+         fi ;
+   tools:
+-    image: hyperflowwms/hflow-tools:1.2.2
++    image: hyperflowwms/hflow-tools:v1.2.2
+ 
+ configMap:
+   data:
