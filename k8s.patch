@@ -48,7 +48,7 @@ index 04423cb..f7a6308 100644
        nodeSelector: {{ . | toYaml | nindent 8}}
        {{- end }}
 diff --git a/charts/nfs-server/values.yaml b/charts/nfs-server/values.yaml
-index aef5010..c2550ba 100644
+index aef5010..a573b21 100644
 --- a/charts/nfs-server/values.yaml
 +++ b/charts/nfs-server/values.yaml
 @@ -6,8 +6,8 @@ server:
@@ -62,6 +62,18 @@ index aef5010..c2550ba 100644
  
  ports:
    nfs: 2049
+@@ -29,7 +29,8 @@ volumeMounts:
+     name: workflow-data
+ 
+ volumes:
+-  - emptyDir: {}
+-    name: workflow-data
++  - name: workflow-data
++    persistentVolumeClaim:
++      claimName: nfs
+ 
+ nodeSelector: {}
+\ No newline at end of file
 diff --git a/values/cluster/hyperflow-engine.yaml b/values/cluster/hyperflow-engine.yaml
 index c1d5ef1..6a72f93 100644
 --- a/values/cluster/hyperflow-engine.yaml
@@ -77,10 +89,10 @@ index c1d5ef1..6a72f93 100644
        - name: HF_VAR_DEBUG
          value: "0"
 diff --git a/values/minikube/hyperflow-engine.yml b/values/minikube/hyperflow-engine.yml
-index a6f5063..90faf65 100644
+index a6f5063..ab77d0b 100644
 --- a/values/minikube/hyperflow-engine.yml
 +++ b/values/minikube/hyperflow-engine.yml
-@@ -2,7 +2,8 @@ containers:
+@@ -2,10 +2,11 @@ containers:
    hyperflow:
      image: hyperflowwms/hyperflow:v1.4.3
    worker:
@@ -89,7 +101,11 @@ index a6f5063..90faf65 100644
 +    imagePullPolicy: Never
      additionalVariables:
        - name: HF_VAR_DEBUG
-         value: "1"
+-        value: "1"
++        value: "0"
+     command:
+       - "/bin/sh"
+       - "-c"
 @@ -30,7 +31,7 @@ containers:
            while true; do sleep 5 ; done ;
          fi ;

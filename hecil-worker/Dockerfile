@@ -1,6 +1,6 @@
-FROM mhart/alpine-node:8
+FROM python:3.8-alpine
 
-RUN apk add --no-cache make gcc g++ zlib-dev
+RUN apk add --no-cache make gcc g++ zlib-dev nodejs npm
 WORKDIR /
 ADD hecil-master.tar.gz /
 
