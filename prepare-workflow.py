@@ -20,6 +20,10 @@ for process in processes:
 
         executor['args'] = new_args
         
+    if 'pipes' in executor:
+        del(executor['pipes'])
+        del(executor['pipeTo'])
+        
 data['processes'] = processes
 
 with open('workflow.json', 'w') as result_json:
