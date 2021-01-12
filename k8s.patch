@@ -1,0 +1,117 @@
+diff --git a/charts/hyperflow-engine/templates/deployment.yml b/charts/hyperflow-engine/templates/deployment.yml
+index b5373bb..53a8329 100644
+--- a/charts/hyperflow-engine/templates/deployment.yml
++++ b/charts/hyperflow-engine/templates/deployment.yml
+@@ -19,7 +19,7 @@ spec:
+           image: {{ .Values.containers.hyperflow.image }}
+           imagePullPolicy: Always
+           {{- with .Values.resources }}
+-          resources: {{ . | toYaml | nindent 10 }}
++          resources: {{ . | toYaml | nindent 12 }}
+           {{- end }}
+           env:
+           - name: REDIS_URL
+diff --git a/charts/hyperflow-engine/values.yaml b/charts/hyperflow-engine/values.yaml
+index c62156a..3f6ce72 100644
+--- a/charts/hyperflow-engine/values.yaml
++++ b/charts/hyperflow-engine/values.yaml
+@@ -4,7 +4,8 @@ containers:
+   hyperflow:
+     image: hyperflowwms/hyperflow:v1.5.2
+   worker:
+-    image: "hyperflowwms/montage2-worker"
++    image: hecil-worker:0.1
++    imagePullPolicy: Never
+     additionalVariables: []
+     command:
+       - "/bin/sh"
+diff --git a/charts/nfs-server/templates/deployment.yml b/charts/nfs-server/templates/deployment.yml
+index 04423cb..f7a6308 100644
+--- a/charts/nfs-server/templates/deployment.yml
++++ b/charts/nfs-server/templates/deployment.yml
+@@ -34,7 +34,7 @@ spec:
+               name: rpcbind
+           securityContext:
+             privileged: true
+-          volumeMounts: {{ .Values.volumeMounts | toYaml | nindent 8 }}
++          volumeMounts: {{ .Values.volumeMounts | toYaml | nindent 10 }}
+         - name: workflow-data
+           image: {{ .Values.workflow.image }}
+           imagePullPolicy: {{ .Values.workflow.imagePullPolicy}}
+@@ -57,7 +57,7 @@ spec:
+                   - "-c"
+                   - >
+                     umount -fl /workflow-data;
+-          volumeMounts: {{- .Values.volumeMounts | toYaml | nindent 8 }}
++          volumeMounts: {{- .Values.volumeMounts | toYaml | nindent 10 }}
+       {{- with .Values.nodeSelector }}
+       nodeSelector: {{ . | toYaml | nindent 8}}
+       {{- end }}
+diff --git a/charts/nfs-server/values.yaml b/charts/nfs-server/values.yaml
+index aef5010..a573b21 100644
+--- a/charts/nfs-server/values.yaml
++++ b/charts/nfs-server/values.yaml
+@@ -6,8 +6,8 @@ server:
+   imagePullPolicy: IfNotPresent
+ 
+ workflow:
+-  image: matplinta/montage-workflow-data:montage0.25-v2
+-  imagePullPolicy: Always
++  image: hecil-data-container:0.1
++  imagePullPolicy: Never
+ 
+ ports:
+   nfs: 2049
+@@ -29,7 +29,8 @@ volumeMounts:
+     name: workflow-data
+ 
+ volumes:
+-  - emptyDir: {}
+-    name: workflow-data
++  - name: workflow-data
++    persistentVolumeClaim:
++      claimName: nfs
+ 
+ nodeSelector: {}
+\ No newline at end of file
+diff --git a/values/cluster/hyperflow-engine.yaml b/values/cluster/hyperflow-engine.yaml
+index c1d5ef1..6a72f93 100644
+--- a/values/cluster/hyperflow-engine.yaml
++++ b/values/cluster/hyperflow-engine.yaml
+@@ -8,7 +8,8 @@ resources:
+ 
+ containers:
+   worker:
+-    image: "hyperflowwms/montage2-worker"
++    image: hecil-worker:0.1
++    imagePullPolicy: Never
+     additionalVariables:
+       - name: HF_VAR_DEBUG
+         value: "0"
+diff --git a/values/minikube/hyperflow-engine.yml b/values/minikube/hyperflow-engine.yml
+index a6f5063..ab77d0b 100644
+--- a/values/minikube/hyperflow-engine.yml
++++ b/values/minikube/hyperflow-engine.yml
+@@ -2,10 +2,11 @@ containers:
+   hyperflow:
+     image: hyperflowwms/hyperflow:v1.4.3
+   worker:
+-    image: hyperflowwms/montage2-worker:je-v1.1.1
++    image: hecil-worker:0.1
++    imagePullPolicy: Never
+     additionalVariables:
+       - name: HF_VAR_DEBUG
+-        value: "1"
++        value: "0"
+     command:
+       - "/bin/sh"
+       - "-c"
+@@ -30,7 +31,7 @@ containers:
+           while true; do sleep 5 ; done ;
+         fi ;
+   tools:
+-    image: hyperflowwms/hflow-tools:1.2.2
++    image: hyperflowwms/hflow-tools:v1.2.2
+ 
+ configMap:
+   data:
